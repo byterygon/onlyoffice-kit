@@ -1,4 +1,4 @@
-import { definePlugin } from '@byterygon/onlyoffice-kit-utils';
+import { definePlugin, uid } from '@byterygon/onlyoffice-kit-utils';
 
 export interface BridgePluginOptions {
   channelId: string;
@@ -6,5 +6,5 @@ export interface BridgePluginOptions {
 
 export const BridgePlugin = definePlugin<BridgePluginOptions>({
   name: 'bridge',
-  defaultOptions: { channelId: '' },
+  defaultOptions: { channelId: uid('bridge') },
 });

@@ -6,32 +6,39 @@ import type {
 export function definePlugin<TOptions = unknown>(
   input: DefinePluginInput<TOptions>,
 ): PluginDescriptor<TOptions> {
-  const { name, defaultOptions = {} as TOptions, setup } = input;
+  const { name: baseName, defaultOptions = {} as TOptions, setup } = input;
 
-  function createDescriptor(options: TOptions): PluginDescriptor<TOptions> {
-    return {
-      name,
+  function createDescriptor(
+    descriptorName: string,
+    options: TOptions,
+  ): PluginDescriptor<TOptions> {
+    const descriptor: PluginDescriptor<TOptions> = {
+      name: descriptorName,
       options,
       configure(overrides: Partial<TOptions>) {
-        return createDescriptor({ ...options, ...overrides });
+        return createDescriptor(descriptorName, { ...options, ...overrides });
       },
-      extend(overrides) {
-        return createDescriptor({
+      extend(
+        overrides: Partial<
+          Omit<PluginDescriptor<TOptions>, 'configure' | 'extend'>
+        >,
+      ) {
+        return createDescriptor(overrides.name ?? descriptorName, {
           ...options,
           ...overrides.options,
         } as TOptions);
       },
     };
+
+    if (setup) {
+      Object.defineProperty(descriptor, '_setup', {
+        value: setup,
+        enumerable: false,
+      });
+    }
+
+    return descriptor;
   }
 
-  const descriptor = createDescriptor(defaultOptions);
-
-  if (setup) {
-    Object.defineProperty(descriptor, '_setup', {
-      value: setup,
-      enumerable: false,
-    });
-  }
-
-  return descriptor;
+  return createDescriptor(baseName, defaultOptions);
 }
