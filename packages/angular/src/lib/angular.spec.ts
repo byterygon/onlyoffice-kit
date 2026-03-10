@@ -1,7 +1,7 @@
-import { placeholder } from './angular.js';
+import { Controller } from './angular.js';
 
 describe('angular', () => {
-  it('should export placeholder', () => {
-    expect(placeholder).toBe(true);
+  it('should re-export Controller from core', () => {
+    expect(Controller).toBeDefined();
   });
 });

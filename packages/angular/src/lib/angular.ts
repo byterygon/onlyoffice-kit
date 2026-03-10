@@ -1,3 +1,2 @@
-// Angular wrapper - placeholder
 // TODO: Implement Angular component/service wrapping @byterygon/onlyoffice-kit-core
-export const placeholder = true;
+export { Controller } from '@byterygon/onlyoffice-kit-core';

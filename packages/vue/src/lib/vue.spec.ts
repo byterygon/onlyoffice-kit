@@ -1,7 +1,7 @@
-import { placeholder } from './vue.js';
+import { Controller } from './vue.js';
 
 describe('vue', () => {
-  it('should export placeholder', () => {
-    expect(placeholder).toBe(true);
+  it('should re-export Controller from core', () => {
+    expect(Controller).toBeDefined();
   });
 });
