@@ -1,67 +1,39 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Instructions for Claude Code (claude.ai/code) working in this repository.
+
+Full documentation lives in [`docs/`](docs/agent-reference.md). This file is the concise entrypoint.
 
 ## Project
 
-`onlyoffice-kit` is a toolkit/SDK for working with [OnlyOffice](https://www.onlyoffice.com/), hosted at `github.com/byterygon/onlyoffice-kit`.
+`onlyoffice-kit` — SDK for integrating and extending OnlyOffice. Monorepo: pnpm + Nx. Published under `@byterygon/onlyoffice-kit-*`.
 
-### Idea
+## Docs
 
-Packages are published under the `@byterygon/onlyoffice-kit-<package>` scope. The monorepo contains the following packages:
+| File                                           | Contents                                               |
+| ---------------------------------------------- | ------------------------------------------------------ |
+| [docs/architecture.md](docs/architecture.md)   | Packages, Controller API, dependency graph             |
+| [docs/plugin-system.md](docs/plugin-system.md) | `definePlugin` / `.configure()` / `.extend()`          |
+| [docs/conventions.md](docs/conventions.md)     | Naming, build, workspace deps, Nx, Changesets, testing |
+| [docs/toolchain.md](docs/toolchain.md)         | Build stack, code generation, pre-commit hooks         |
 
-- **core** — Wraps the OnlyOffice editor inside a Web Component to isolate it from the host page's `window`. The official SDK injects an iframe and exposes its APIs on the main frame; this package instead provides a **Controller** (inspired by Mapbox GL's `Map` class). The user creates a Controller with a target `<div>` element (or its ID), and the Controller injects a Web Component into that element. Communication with the editor and its events flows through the Web Component's `MessageChannel`. The Controller also exposes methods for managing plugins by accepting plugin descriptors as input. This package also re-exports all type definitions (config options, editor events, message payloads, plugin APIs) so consumers only need to install `core`.
-- **plugins** — OnlyOffice editor plugins:
-  - **bridge** — OnlyOffice plugins run in iframes and expose `callCommand`, `executeMethod`, and event-attachment APIs that are only accessible from within the plugin iframe. Because the plugin is hosted on the same origin as the main frame, this package uses a `BroadcastChannel` (keyed by a unique ID provided when the plugin is configured in the Controller) to bridge communication between the main frame and the plugin iframe, so those APIs can be invoked from the main frame.
-  - **copy-paste** — The native context-menu copy/paste in OnlyOffice cannot read from the system clipboard; users must use Ctrl+C / Ctrl+V. This plugin uses the Clipboard API (`navigator.clipboard.read`) together with OnlyOffice's `pasteText` / `pasteHTML` commands to enable context-menu paste.
-- **types** — Type-safe definitions for OnlyOffice configuration options, editor events, message payloads, and plugin APIs. This is an internal workspace package (not published separately); `core` re-exports its public types.
-- **utils** — Shared utilities consumed by the other packages.
-- **react, vue, angular** — Framework-specific wrappers around `core`, with an API style similar to Tiptap's framework integrations.
+## Packages (quick ref)
 
-### Plugin Descriptor API
+| Package               | Purpose                                                       |
+| --------------------- | ------------------------------------------------------------- |
+| **core**              | Web Component wrapper + Controller API (re-exports types)     |
+| **types**             | Internal type definitions (not published separately)          |
+| **utils**             | Shared stateless utilities                                    |
+| **plugin-bridge**     | Exposes plugin iframe APIs to main frame via BroadcastChannel |
+| **plugin-copy-paste** | Enables context-menu paste using Clipboard API                |
+| **react/vue/angular** | Thin framework wrappers around core                           |
 
-Plugins follow a declarative descriptor pattern inspired by Tiptap's `.create()` / `.configure()`:
+Dependency direction: `utils/types → core → plugins → framework wrappers`
 
-```ts
-// Plugin author defines a descriptor (not instantiated by users)
-const BridgePlugin = definePlugin({
-  name: 'bridge',
-  // ...plugin capabilities
-});
+## Rules
 
-// Consumer configures and passes to Controller
-const editor = new Controller({
-  element: '#editor',
-  plugins: [
-    BridgePlugin.configure({
-      /* options */
-    }),
-  ],
-});
-```
-
-- `definePlugin()` returns a descriptor object, not an instance. The Controller handles instantiation internally.
-- `.configure(options)` returns a new descriptor with overridden options.
-- `.extend(overrides)` creates a derived descriptor, inheriting the base and overriding specific fields.
-
-### Toolchain
-
-This project is a monorepo managed with **pnpm workspaces** and **Nx** (with plugins) for task orchestration and code generation.
-
-- **CI/CD** — GitHub Actions
-- **Versioning** — Changesets
-- **Build** — Vite (library mode)
-- **Playground** — A local playground app for manual testing during development
-- **Unit tests** — Vitest
-- **E2E tests** — Playwright (if beneficial for testing editor interactions)
-
-### Conventions
-
-- Each package re-exports its public API from `src/index.ts`
-- Package naming: `@byterygon/onlyoffice-kit-<name>` (plugins: `@byterygon/onlyoffice-kit-plugin-<name>`)
-- Build output: `dist/` per package (ESM + CJS via Vite library mode, `.d.ts` via `vite-plugin-dts`)
-- Internal imports use pnpm workspace protocol (`"workspace:*"`)
-- Nx caching for `build`, `test`, `lint`, `typecheck`; `build` depends on upstream `build`
-- Changesets: one per logical change; CI auto-publishes on merge to `main`
-- **Scaffolding** — All package configs and project structure MUST be generated using proper tooling (`nx g`, `pnpm init`, `pnpm create vite@latest`, etc.). Never hand-write package.json, tsconfig, vite.config, or other boilerplate that a generator can produce.
-- **Pre-commit hooks** — Uses Husky + lint-staged to enforce code quality on every commit. Prettier and ESLint run automatically via lint-staged on staged files. All AI-generated code MUST pass through these hooks before being committed — never skip or bypass them (`--no-verify` is forbidden).
+1. **Use generators** for scaffolding (`nx g`, `pnpm create`, `pnpm init`). Never hand-write `package.json`, `tsconfig`, `vite.config` from scratch.
+2. **Never bypass hooks** — `--no-verify` is forbidden. Husky + lint-staged enforce ESLint + Prettier.
+3. **Small, incremental changes.** Breaking API changes require major version bump via Changesets.
+4. **Respect package boundaries.** Core logic in `core`; framework packages stay thin.
+5. **Test changes** — Vitest (unit), Playwright (E2E). Run relevant targets for touched packages.
