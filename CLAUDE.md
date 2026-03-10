@@ -27,15 +27,17 @@ Plugins follow a declarative descriptor pattern inspired by Tiptap's `.create()`
 const BridgePlugin = definePlugin({
   name: 'bridge',
   // ...plugin capabilities
-})
+});
 
 // Consumer configures and passes to Controller
 const editor = new Controller({
   element: '#editor',
   plugins: [
-    BridgePlugin.configure({ /* options */ }),
+    BridgePlugin.configure({
+      /* options */
+    }),
   ],
-})
+});
 ```
 
 - `definePlugin()` returns a descriptor object, not an instance. The Controller handles instantiation internally.
@@ -44,7 +46,7 @@ const editor = new Controller({
 
 ### Toolchain
 
-This project is a monorepo managed with **pnpm workspaces** and **Nx** for task orchestration.
+This project is a monorepo managed with **pnpm workspaces** and **Nx** (with plugins) for task orchestration and code generation.
 
 - **CI/CD** — GitHub Actions
 - **Versioning** — Changesets
@@ -61,3 +63,5 @@ This project is a monorepo managed with **pnpm workspaces** and **Nx** for task 
 - Internal imports use pnpm workspace protocol (`"workspace:*"`)
 - Nx caching for `build`, `test`, `lint`, `typecheck`; `build` depends on upstream `build`
 - Changesets: one per logical change; CI auto-publishes on merge to `main`
+- **Scaffolding** — All package configs and project structure MUST be generated using proper tooling (`nx g`, `pnpm init`, `pnpm create vite@latest`, etc.). Never hand-write package.json, tsconfig, vite.config, or other boilerplate that a generator can produce.
+- **Pre-commit hooks** — Uses Husky + lint-staged to enforce code quality on every commit. Prettier and ESLint run automatically via lint-staged on staged files. All AI-generated code MUST pass through these hooks before being committed — never skip or bypass them (`--no-verify` is forbidden).
