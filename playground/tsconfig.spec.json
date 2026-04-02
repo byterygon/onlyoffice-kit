@@ -13,7 +13,10 @@
     ],
     "jsx": "react-jsx",
     "module": "esnext",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "paths": {
+      "@byterygon/onlyoffice-kit-core": ["../packages/core/src/index.ts"]
+    }
   },
   "include": [
     "vite.config.ts",

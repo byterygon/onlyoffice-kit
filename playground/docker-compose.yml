@@ -1,0 +1,25 @@
+services:
+  onlyoffice:
+    image: onlyoffice/documentserver:latest
+    container_name: onlyoffice-dev
+    ports:
+      - '8080:80'
+    environment:
+      - JWT_ENABLED=false
+      - ALLOW_PRIVATE_IP_ADDRESS=true
+      - ALLOW_META_IP_ADDRESS=true
+    volumes:
+      - onlyoffice-data:/var/www/onlyoffice/Data
+      - onlyoffice-log:/var/log/onlyoffice
+
+  fileserver:
+    image: nginx:alpine
+    container_name: fileserver-dev
+    ports:
+      - '8081:80'
+    volumes:
+      - ./test-files:/usr/share/nginx/html:ro
+
+volumes:
+  onlyoffice-data:
+  onlyoffice-log:
