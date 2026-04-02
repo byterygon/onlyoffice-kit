@@ -2,7 +2,7 @@
 
 ## Overview
 
-`onlyoffice-kit` is an SDK for integrating and extending the OnlyOffice editor. It provides a framework-agnostic developer experience, avoiding the official SDK's global `window` pollution and tight iframe coupling.
+`onlyoffice-kit` is an SDK for integrating and extending the OnlyOffice editor. It provides a framework-agnostic developer experience with a Controller API, typed events, and plugin-oriented extension points.
 
 Repository: `github.com/byterygon/onlyoffice-kit`
 
@@ -18,7 +18,7 @@ The main consumer-facing package. Responsibilities:
 
 - Wraps OnlyOffice editor inside a **Web Component** to isolate it from the host `window`
 - Provides a **Controller** API (inspired by Mapbox GL's `Map` class)
-- Communicates with the editor via **MessageChannel**
+- Communicates with the editor via a typed **Portex MsgLink** over MessageChannel
 - Manages plugin lifecycle
 - Re-exports all public types from the `types` package
 
@@ -33,10 +33,17 @@ const editor = new Controller({
 Controller internals:
 
 1. Injects a Web Component into the target DOM node
-2. Initializes the OnlyOffice iframe inside the shadow DOM
-3. Sets up MessageChannel for event messaging
-4. Loads and manages configured plugins
-5. Exposes public API for editor control
+2. Loads DocsAPI from the configured Document Server URL
+3. Initializes `DocsAPI.DocEditor(...)`, which creates the editor iframe from ONLYOFFICE Docs
+4. Sets up typed command/event messaging between Controller and Web Component via Portex MsgLink (see `protocol.ts`)
+5. Loads and manages configured plugins
+6. Exposes public API for editor control
+
+Runtime config updates:
+
+- `controller.setConfig(nextConfig)` updates callback refs when only `config.events` changes
+- Core config changes recreate the editor instance through `DocsAPI.DocEditor(...)`
+- `documentServerUrl` stays immutable for a controller instance
 
 Consumers only need to install `@byterygon/onlyoffice-kit-core`.
 

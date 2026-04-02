@@ -20,6 +20,7 @@
   ],
   "dependencies": {
     "@byterygon/onlyoffice-kit-types": "workspace:*",
-    "@byterygon/onlyoffice-kit-utils": "workspace:*"
+    "@byterygon/onlyoffice-kit-utils": "workspace:*",
+    "@byterygon/portex": "^0.0.0"
   }
 }

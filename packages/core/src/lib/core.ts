@@ -1,6 +1,5 @@
 export { Controller } from './controller.js';
 export type { ControllerOptions } from './controller.js';
-export { EditorMessageChannel } from './message-channel.js';
 export {
   OnlyOfficeEditorElement,
   registerWebComponent,
