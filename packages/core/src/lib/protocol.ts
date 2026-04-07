@@ -6,9 +6,20 @@ import { defineLink } from '@byterygon/portex';
 
 export type CoreOnlyOfficeConfig = Omit<OnlyOfficeConfig, 'events'>;
 
+/** Fields that can be updated without recreating the editor instance. */
+export type LayoutConfig = Pick<CoreOnlyOfficeConfig, 'width' | 'height'>;
+
+/** Fields that require a full editor recreation when changed. */
+export type ReloadConfig = Omit<CoreOnlyOfficeConfig, 'width' | 'height'>;
+
 export interface EditorInitPayload {
   documentServerUrl: string;
   config: CoreOnlyOfficeConfig;
+}
+
+export interface UpdateLayoutPayload {
+  width?: string;
+  height?: string;
 }
 
 export interface EditorEventPayload {
@@ -49,6 +60,8 @@ export const controllerDef = defineLink({
     init: (_payload: EditorInitPayload) => {},
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
     recreate: (_payload: EditorInitPayload) => {},
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+    updateLayout: (_payload: UpdateLayoutPayload) => {},
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     destroy: () => {},
   },
@@ -114,5 +127,28 @@ export function stripEventHandlers(
     token: config.token,
     type: config.type,
     width: config.width,
+  };
+}
+
+/** Extract the fields that require a full editor reload when changed. */
+export function extractReloadConfig(
+  config: CoreOnlyOfficeConfig,
+): ReloadConfig {
+  return {
+    document: config.document,
+    documentType: config.documentType,
+    editorConfig: config.editorConfig,
+    token: config.token,
+    type: config.type,
+  };
+}
+
+/** Extract the fields that can be applied without reloading the editor. */
+export function extractLayoutConfig(
+  config: CoreOnlyOfficeConfig,
+): LayoutConfig {
+  return {
+    width: config.width,
+    height: config.height,
   };
 }

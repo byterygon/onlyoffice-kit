@@ -59,4 +59,8 @@ export type {
   CommandMessage,
   EventMessage,
 } from './messages.js';
-export type { PluginDescriptor, DefinePluginInput } from './plugin.js';
+export type {
+  PluginDescriptor,
+  DefinePluginInput,
+  PluginContext,
+} from './plugin.js';

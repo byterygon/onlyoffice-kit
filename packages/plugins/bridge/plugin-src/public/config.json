@@ -1,0 +1,15 @@
+{
+  "guid": "asc.{3a6f4b2c-1d5e-4a9b-8c7f-2e0d1b3a5c9e}",
+  "name": "OnlyOffice Kit Bridge",
+  "version": "1.0",
+  "variations": [
+    {
+      "description": "Bridges plugin iframe APIs to the host page via BroadcastChannel.",
+      "url": "index.html",
+      "type": "background",
+      "EditorsSupport": ["word", "cell", "slide", "pdf"],
+      "initDataType": "none",
+      "initData": ""
+    }
+  ]
+}

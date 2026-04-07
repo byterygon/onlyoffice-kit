@@ -1,7 +1,7 @@
 import type { EditorEventName } from '@byterygon/onlyoffice-kit-types';
 import { MsgLink } from '@byterygon/portex';
 import { EDITOR_EVENT_NAMES } from './protocol.js';
-import type { EditorInitPayload } from './protocol.js';
+import type { EditorInitPayload, UpdateLayoutPayload } from './protocol.js';
 import { controllerDef, editorElementDef } from './protocol.js';
 
 export const EDITOR_ELEMENT_TAG = 'onlyoffice-editor';
@@ -56,6 +56,9 @@ export class OnlyOfficeEditorElement extends HTMLElement {
     });
     this.link.on('recreate', (payload: unknown) => {
       void this.initOrRecreateEditor(payload as EditorInitPayload);
+    });
+    this.link.on('updateLayout', (payload: unknown) => {
+      this.applyLayout(payload as UpdateLayoutPayload);
     });
     this.link.on('destroy', () => {
       this.destroyEditor();
@@ -141,6 +144,11 @@ export class OnlyOfficeEditorElement extends HTMLElement {
       };
     }
     return handlers;
+  }
+
+  private applyLayout(payload: UpdateLayoutPayload): void {
+    if (payload.width !== undefined) this.style.width = payload.width;
+    if (payload.height !== undefined) this.style.height = payload.height;
   }
 
   private destroyEditor(): void {

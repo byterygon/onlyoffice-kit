@@ -16,10 +16,15 @@
   },
   "files": [
     "dist",
+    "plugin",
     "!**/*.tsbuildinfo"
   ],
+  "scripts": {
+    "build:plugin": "vite build --config vite.plugin.config.mts"
+  },
   "dependencies": {
     "@byterygon/onlyoffice-kit-types": "workspace:*",
-    "@byterygon/onlyoffice-kit-utils": "workspace:*"
+    "@byterygon/onlyoffice-kit-utils": "workspace:*",
+    "@byterygon/onlyoffice-kit-plugin-sdk": "workspace:*"
   }
 }

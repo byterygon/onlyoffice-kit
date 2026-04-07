@@ -1,5 +1,6 @@
 node_modules
 dist
+plugin
 out-tsc
 test-output
 .nx/cache

@@ -72,6 +72,14 @@ Exposes OnlyOffice plugin iframe APIs (`callCommand`, `executeMethod`, `attachEv
 
 Enables context-menu paste using `navigator.clipboard.read` combined with OnlyOffice's `pasteText` / `pasteHTML` commands. Solves the limitation where native context-menu copy/paste cannot read the system clipboard.
 
+#### plugin-sdk (`@byterygon/onlyoffice-kit-plugin-sdk`)
+
+Utilities for authoring OnlyOffice iframe plugins:
+
+- `defineAscPlugin(options)` — wraps the OnlyOffice plugin iframe lifecycle; the `init` callback receives a `BroadcastChannel` (for Portex messaging) and the `Asc` instance
+- `defineAscMethods(methodNames[])` — declares a typed Portex `LinkDefinition` for a subset of `TextDocumentMethodMap` methods; each method becomes a typed RPC procedure wrapping `Asc.plugin.executeMethod`
+- `TextDocumentMethodMap` — typed map of 50+ OnlyOffice Text Document API methods (source: OnlyOffice plugin API docs)
+
 ### Framework wrappers
 
 | Package | Scope                               |

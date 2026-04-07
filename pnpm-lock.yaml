@@ -164,6 +164,24 @@ importers:
 
   packages/plugins/bridge:
     dependencies:
+      '@byterygon/onlyoffice-kit-plugin-sdk':
+        specifier: workspace:*
+        version: link:../sdk
+      '@byterygon/onlyoffice-kit-types':
+        specifier: workspace:*
+        version: link:../../types
+      '@byterygon/onlyoffice-kit-utils':
+        specifier: workspace:*
+        version: link:../../utils
+      '@byterygon/portex':
+        specifier: file:../../../../portex/packages/portex
+        version: file:../portex/packages/portex
+
+  packages/plugins/copy-paste:
+    dependencies:
+      '@byterygon/onlyoffice-kit-plugin-sdk':
+        specifier: workspace:*
+        version: link:../sdk
       '@byterygon/onlyoffice-kit-types':
         specifier: workspace:*
         version: link:../../types
@@ -171,14 +189,11 @@ importers:
         specifier: workspace:*
         version: link:../../utils
 
-  packages/plugins/copy-paste:
+  packages/plugins/sdk:
     dependencies:
-      '@byterygon/onlyoffice-kit-types':
-        specifier: workspace:*
-        version: link:../../types
-      '@byterygon/onlyoffice-kit-utils':
-        specifier: workspace:*
-        version: link:../../utils
+      '@byterygon/portex':
+        specifier: file:../../../../portex/packages/portex
+        version: file:../portex/packages/portex
 
   packages/react:
     dependencies:
@@ -211,6 +226,9 @@ importers:
       '@base-ui/react':
         specifier: ^1.3.0
         version: 1.3.0(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@byterygon/onlyoffice-kit-react':
+        specifier: workspace:*
+        version: link:../packages/react
       '@fontsource-variable/geist':
         specifier: ^5.2.8
         version: 5.2.8
@@ -1210,6 +1228,9 @@ packages:
       {
         integrity: sha512-2+0JuVBPWeGqRpJzN2bS0OqrKpeI6sg8hvGMe8DSiC2uSMm1wUXRfdb0BO8PJ3YcL2hzjFCc0PS+cC7As3UTUg==,
       }
+
+  '@byterygon/portex@file:../portex/packages/portex':
+    resolution: { directory: ../portex/packages/portex, type: directory }
 
   '@changesets/apply-release-plan@7.1.0':
     resolution:
@@ -12842,6 +12863,8 @@ snapshots:
   '@borewit/text-codec@0.2.1': {}
 
   '@byterygon/portex@0.0.0': {}
+
+  '@byterygon/portex@file:../portex/packages/portex': {}
 
   '@changesets/apply-release-plan@7.1.0':
     dependencies:

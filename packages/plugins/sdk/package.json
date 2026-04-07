@@ -1,5 +1,5 @@
 {
-  "name": "@byterygon/onlyoffice-kit-plugin-bridge",
+  "name": "@byterygon/onlyoffice-kit-plugin-sdk",
   "version": "0.0.1",
   "type": "module",
   "main": "./dist/index.js",
@@ -16,16 +16,9 @@
   },
   "files": [
     "dist",
-    "plugin",
     "!**/*.tsbuildinfo"
   ],
-  "scripts": {
-    "build:plugin": "vite build --config vite.plugin.config.mts"
-  },
   "dependencies": {
-    "@byterygon/onlyoffice-kit-types": "workspace:*",
-    "@byterygon/onlyoffice-kit-utils": "workspace:*",
-    "@byterygon/onlyoffice-kit-plugin-sdk": "workspace:*",
     "@byterygon/portex": "file:../../../../portex/packages/portex"
   }
 }

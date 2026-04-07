@@ -61,3 +61,37 @@ const editor = new Controller({
 - `.extend(overrides)` → returns a derived descriptor
 - Instantiation and lifecycle are handled internally by `Controller`
 - Plugin authors define capabilities; consumers only configure and pass descriptors
+
+---
+
+## Iframe Plugin SDK
+
+Distinct from the Controller-level `definePlugin`, OnlyOffice plugins also run in an **iframe context** managed by OnlyOffice itself. The `plugin-sdk` package provides helpers for that layer.
+
+### defineAscPlugin
+
+Wraps the OnlyOffice plugin iframe lifecycle. The `init` callback receives a `BroadcastChannel` (for Portex messaging to the main frame) and the `Asc` instance:
+
+```ts
+import {
+  defineAscPlugin,
+  defineAscMethods,
+} from '@byterygon/onlyoffice-kit-plugin-sdk';
+import { MsgLink } from '@byterygon/portex';
+
+const bridgeDef = defineAscMethods(['GetFontList', 'PasteHtml']);
+
+defineAscPlugin({
+  init(channel, _asc) {
+    const link = new MsgLink(channel, bridgeDef);
+    link.ready();
+  },
+});
+```
+
+### defineAscMethods
+
+Accepts an array of method names from `TextDocumentMethodMap` and returns a Portex `LinkDefinition`. Each method becomes a typed RPC procedure that wraps `Asc.plugin.executeMethod`.
+
+- Types are inferred from `TextDocumentMethodMap` — no manual stubs needed
+- The `BroadcastChannel` from `defineAscPlugin` connects this definition to the main frame via the bridge plugin

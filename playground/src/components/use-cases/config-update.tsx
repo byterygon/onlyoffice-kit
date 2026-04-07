@@ -1,8 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  Controller,
-  type OnlyOfficeConfig,
-} from '@byterygon/onlyoffice-kit-core';
+import { useCallback, useMemo, useState } from 'react';
+import { useEditor } from '@byterygon/onlyoffice-kit-react';
+import type { OnlyOfficeConfig } from '@byterygon/onlyoffice-kit-core';
 
 const DOCUMENT_SERVER_URL = 'http://localhost:8080/';
 
@@ -21,8 +19,6 @@ const FILE_TYPES = [
 ] as const;
 
 export function ConfigUpdate() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const controllerRef = useRef<Controller | null>(null);
   const [activeType, setActiveType] = useState(0);
   const [logs, setLogs] = useState<string[]>([]);
 
@@ -30,54 +26,37 @@ export function ConfigUpdate() {
     setLogs((current) => [message, ...current].slice(0, 8));
   }, []);
 
-  const buildConfig = useCallback(
-    (typeIndex: number): OnlyOfficeConfig => {
-      const ft = FILE_TYPES[typeIndex];
-      return {
-        document: {
-          fileType: ft.fileType,
-          key: `demo-${ft.fileType}-key`,
-          title: `Sample.${ft.fileType}`,
-          url: `http://fileserver:80/sample.${ft.fileType}`,
-        },
-        documentType: ft.documentType,
-        editorConfig: {
-          callbackUrl: 'http://localhost:4200/callback',
-          lang: 'en',
-        },
-        events: {
-          onAppReady: () => appendLog(`[${ft.label}] onAppReady`),
-          onDocumentReady: () => appendLog(`[${ft.label}] onDocumentReady`),
-        },
-        width: '100%',
-        height: '100%',
-        type: 'desktop',
-      };
-    },
-    [appendLog],
-  );
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const controller = new Controller({
-      element: containerRef.current,
-      config: buildConfig(0),
-      documentServerUrl: DOCUMENT_SERVER_URL,
-    });
-    controllerRef.current = controller;
-    appendLog('Controller initialized');
-
-    return () => {
-      controller.destroy();
-      controllerRef.current = null;
+  const config = useMemo((): OnlyOfficeConfig => {
+    const ft = FILE_TYPES[activeType];
+    return {
+      document: {
+        fileType: ft.fileType,
+        key: `demo-${ft.fileType}-key`,
+        title: `Sample.${ft.fileType}`,
+        url: `http://fileserver:80/sample.${ft.fileType}`,
+      },
+      documentType: ft.documentType,
+      editorConfig: {
+        callbackUrl: 'http://localhost:4200/callback',
+        lang: 'en',
+      },
+      events: {
+        onAppReady: () => appendLog(`[${ft.label}] onAppReady`),
+        onDocumentReady: () => appendLog(`[${ft.label}] onDocumentReady`),
+      },
+      width: '100%',
+      height: '100%',
+      type: 'desktop',
     };
-  }, [appendLog, buildConfig]);
+  }, [activeType, appendLog]);
+
+  const { containerRef } = useEditor({
+    documentServerUrl: DOCUMENT_SERVER_URL,
+    config,
+  });
 
   const switchType = (index: number) => {
     setActiveType(index);
-    const config = buildConfig(index);
-    controllerRef.current?.setConfig(config);
     appendLog(`Switched to ${FILE_TYPES[index].label}`);
   };
 

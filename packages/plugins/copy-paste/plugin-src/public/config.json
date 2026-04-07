@@ -1,0 +1,15 @@
+{
+  "guid": "asc.{7e2c9f1a-4b8d-3e5f-0a6c-1d9e2b7f4c8a}",
+  "name": "OnlyOffice Kit Copy-Paste",
+  "version": "1.0",
+  "variations": [
+    {
+      "description": "Enables clipboard paste from the host page via BroadcastChannel.",
+      "url": "index.html",
+      "type": "background",
+      "EditorsSupport": ["word", "cell", "slide", "pdf"],
+      "initDataType": "none",
+      "initData": ""
+    }
+  ]
+}

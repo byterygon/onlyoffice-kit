@@ -19,14 +19,15 @@ Full documentation lives in [`docs/`](docs/agent-reference.md). This file is the
 
 ## Packages (quick ref)
 
-| Package               | Purpose                                                       |
-| --------------------- | ------------------------------------------------------------- |
-| **core**              | Web Component wrapper + Controller API (re-exports types)     |
-| **types**             | Internal type definitions (not published separately)          |
-| **utils**             | Shared stateless utilities                                    |
-| **plugin-bridge**     | Exposes plugin iframe APIs to main frame via BroadcastChannel |
-| **plugin-copy-paste** | Enables context-menu paste using Clipboard API                |
-| **react/vue/angular** | Thin framework wrappers around core                           |
+| Package               | Purpose                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------- |
+| **core**              | Web Component wrapper + Controller API (re-exports types)                                         |
+| **types**             | Internal type definitions (not published separately)                                              |
+| **utils**             | Shared stateless utilities                                                                        |
+| **plugin-bridge**     | Exposes plugin iframe APIs to main frame via BroadcastChannel                                     |
+| **plugin-copy-paste** | Enables context-menu paste using Clipboard API                                                    |
+| **plugin-sdk**        | Helpers for iframe-level plugins (`defineAscPlugin`, `defineAscMethods`, `TextDocumentMethodMap`) |
+| **react/vue/angular** | Thin framework wrappers around core                                                               |
 
 Dependency direction: `utils/types → core → plugins → framework wrappers`
 
@@ -37,3 +38,4 @@ Dependency direction: `utils/types → core → plugins → framework wrappers`
 3. **Small, incremental changes.** Breaking API changes require major version bump via Changesets.
 4. **Respect package boundaries.** Core logic in `core`; framework packages stay thin.
 5. **Test changes** — Vitest (unit), Playwright (E2E). Run relevant targets for touched packages.
+6. **Commit after each logical change.** After completing each coherent code change, create a commit immediately. Before pushing, squash all session commits into one with a clear summary message (`git rebase -i`).

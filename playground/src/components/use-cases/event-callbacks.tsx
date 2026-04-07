@@ -1,14 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  Controller,
-  type OnlyOfficeConfig,
-} from '@byterygon/onlyoffice-kit-core';
+import { useCallback, useMemo, useState } from 'react';
+import { useEditor } from '@byterygon/onlyoffice-kit-react';
+import type { OnlyOfficeConfig } from '@byterygon/onlyoffice-kit-core';
 
 const DOCUMENT_SERVER_URL = 'http://localhost:8080/';
 
 export function EventCallbacks() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const controllerRef = useRef<Controller | null>(null);
   const [callbackVersion, setCallbackVersion] = useState(1);
   const [logs, setLogs] = useState<string[]>([]);
 
@@ -16,8 +12,8 @@ export function EventCallbacks() {
     setLogs((current) => [message, ...current].slice(0, 20));
   }, []);
 
-  const buildConfig = useCallback(
-    (version: number): OnlyOfficeConfig => ({
+  const config = useMemo(
+    (): OnlyOfficeConfig => ({
       document: {
         fileType: 'docx',
         key: 'demo-events-key',
@@ -30,46 +26,33 @@ export function EventCallbacks() {
         lang: 'en',
       },
       events: {
-        onAppReady: () => appendLog(`[v${version}] onAppReady`),
-        onDocumentReady: () => appendLog(`[v${version}] onDocumentReady`),
+        onAppReady: () => appendLog(`[v${callbackVersion}] onAppReady`),
+        onDocumentReady: () =>
+          appendLog(`[v${callbackVersion}] onDocumentReady`),
         onError: (event: { data: { errorDescription: string } }) =>
-          appendLog(`[v${version}] onError: ${event.data.errorDescription}`),
+          appendLog(
+            `[v${callbackVersion}] onError: ${event.data.errorDescription}`,
+          ),
         onWarning: (event: { data: { warningDescription: string } }) =>
           appendLog(
-            `[v${version}] onWarning: ${event.data.warningDescription}`,
+            `[v${callbackVersion}] onWarning: ${event.data.warningDescription}`,
           ),
         onInfo: (event: { data: unknown }) =>
-          appendLog(`[v${version}] onInfo: ${JSON.stringify(event.data)}`),
+          appendLog(
+            `[v${callbackVersion}] onInfo: ${JSON.stringify(event.data)}`,
+          ),
       },
       width: '100%',
       height: '100%',
       type: 'desktop',
     }),
-    [appendLog],
+    [appendLog, callbackVersion],
   );
 
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const controller = new Controller({
-      element: containerRef.current,
-      config: buildConfig(1),
-      documentServerUrl: DOCUMENT_SERVER_URL,
-    });
-    controllerRef.current = controller;
-    appendLog('Controller initialized');
-
-    return () => {
-      controller.destroy();
-      controllerRef.current = null;
-    };
-  }, [appendLog, buildConfig]);
-
-  useEffect(() => {
-    if (callbackVersion > 1) {
-      controllerRef.current?.setConfig(buildConfig(callbackVersion));
-    }
-  }, [callbackVersion, buildConfig]);
+  const { containerRef } = useEditor({
+    documentServerUrl: DOCUMENT_SERVER_URL,
+    config,
+  });
 
   const rotateCallbacks = () => {
     setCallbackVersion((v) => v + 1);

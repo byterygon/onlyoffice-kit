@@ -1,8 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Controller,
-  type OnlyOfficeConfig,
-} from '@byterygon/onlyoffice-kit-core';
+import { useCallback, useMemo, useState } from 'react';
+import { useEditor } from '@byterygon/onlyoffice-kit-react';
+import type { OnlyOfficeConfig } from '@byterygon/onlyoffice-kit-core';
 
 const DOCUMENT_SERVER_URL = 'http://localhost:8080/';
 const INITIAL_CALLBACK_VERSION = 1;
@@ -50,8 +48,6 @@ function createConfig(
 }
 
 export function BasicEditor() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const controllerRef = useRef<Controller | null>(null);
   const [callbackVersion, setCallbackVersion] = useState(
     INITIAL_CALLBACK_VERSION,
   );
@@ -67,31 +63,10 @@ export function BasicEditor() {
     [appendLog, callbackVersion, documentTitle],
   );
 
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const initialConfig = createConfig(
-      INITIAL_DOCUMENT_TITLE,
-      INITIAL_CALLBACK_VERSION,
-      appendLog,
-    );
-    const controller = new Controller({
-      element: containerRef.current,
-      config: initialConfig,
-      documentServerUrl: DOCUMENT_SERVER_URL,
-    });
-    controllerRef.current = controller;
-    appendLog('Controller initialized');
-
-    return () => {
-      controller.destroy();
-      controllerRef.current = null;
-    };
-  }, [appendLog]);
-
-  useEffect(() => {
-    controllerRef.current?.setConfig(config);
-  }, [config]);
+  const { containerRef } = useEditor({
+    documentServerUrl: DOCUMENT_SERVER_URL,
+    config,
+  });
 
   const rotateCallbacks = (): void => {
     setCallbackVersion((value) => value + 1);
